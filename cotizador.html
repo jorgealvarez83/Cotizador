@@ -1,0 +1,107 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+
+const productos = [
+  { 
+    nombre: 'Blackout', 
+    precioM2: 58000, 
+    precioMinimo: 58000, 
+    opciones: ['Blanco', 'Negro', 'Gris']
+  },
+  { 
+    nombre: 'Sheer Elegance', 
+    precioM2: 130000, 
+    precioMinimo: 170000, 
+    opciones: ['Estilo 1', 'Estilo 2', 'Estilo 3', 'Estilo 4', 'Estilo 5', 'Estilo 6']
+  },
+  { 
+    nombre: 'Panel Japonés', 
+    precioM2: 150000, 
+    precioMinimo: 150000, 
+    opciones: ['Tela 1', 'Tela 2', 'Tela 3', 'Tela 4', 'Tela 5', 'Tela 6']
+  }
+];
+
+const CotizadorPersianas = () => {
+  const [ancho, setAncho] = useState('');
+  const [alto, setAlto] = useState('');
+  const [productoSeleccionado, setProductoSeleccionado] = useState(productos[0]);
+  const [opcionSeleccionada, setOpcionSeleccionada] = useState('');
+  const [precio, setPrecio] = useState(0);
+
+  const calcularPrecio = () => {
+    const area = (parseFloat(ancho) * parseFloat(alto)) / 10000; // convertir de cm2 a m2
+    const precioCalculado = Math.max(productoSeleccionado.precioMinimo, area * productoSeleccionado.precioM2);
+    setPrecio(precioCalculado);
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white text-black">
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold mb-2">Black & White</h1>
+        <p className="text-xl italic mb-4">"Luz y sombra, a tu medida"</p>
+        <p className="text-lg">Bienvenido a nuestro cotizador de persianas y blackouts</p>
+      </div>
+      
+      <Card className="w-[350px] bg-white border-black">
+        <CardHeader>
+          <CardTitle className="text-center">Cotizador</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label>Producto:</label>
+              <Select onValueChange={(value) => setProductoSeleccionado(productos.find(p => p.nombre === value))}>
+                <SelectTrigger className="border-black">
+                  <SelectValue placeholder="Seleccione un producto" />
+                </SelectTrigger>
+                <SelectContent>
+                  {productos.map((producto) => (
+                    <SelectItem key={producto.nombre} value={producto.nombre}>{producto.nombre}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <label>Opción:</label>
+              <Select onValueChange={setOpcionSeleccionada}>
+                <SelectTrigger className="border-black">
+                  <SelectValue placeholder="Seleccione una opción" />
+                </SelectTrigger>
+                <SelectContent>
+                  {productoSeleccionado.opciones.map((opcion) => (
+                    <SelectItem key={opcion} value={opcion}>{opcion}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <label>Ancho (cm):</label>
+              <Input type="number" value={ancho} onChange={(e) => setAncho(e.target.value)} className="border-black" />
+            </div>
+            
+            <div className="space-y-2">
+              <label>Alto (cm):</label>
+              <Input type="number" value={alto} onChange={(e) => setAlto(e.target.value)} className="border-black" />
+            </div>
+            
+            <Button onClick={calcularPrecio} className="w-full bg-black text-white hover:bg-gray-800">Calcular Precio</Button>
+            
+            {precio > 0 && (
+              <div className="mt-4 text-center">
+                <strong>Precio estimado: {precio.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</strong>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default CotizadorPersianas;
